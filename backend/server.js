@@ -1,30 +1,28 @@
-require('dotenv').config(); //import dotenv
-const express = require('express'); //import express
-const mongoose = require('mongoose'); //import mongoose
-const user_routes = require('./routes/users'); //import user routes  
-const guest_routes = require('./routes/guest'); //import guest routes
-const admin_routes = require('./routes/admin'); //import admin routes
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const authRoute = require("./routes/auth");
+const userRoute = require("./routes/users");
+const movieRoute = require("./routes/movies");
+const listRoute = require("./routes/lists");
 
-const app = express(); //create express app
+const app = express();
 
-app.use((req, res, next) => {
-    console.log(req.path, req.method); //log reqs
-    next();
-})
+dotenv.config();
 
-app.use(express.json()); //use express json
-
-//routes 
-app.use(admin_routes); //starting route.
-// connect to db 
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log('connected to db');
-        app.listen(process.env.PORT); //listen to reqs
-    })
-    .catch(err => {
-        console.log(err);
-    })
+  .then(() => console.log("DB Connected"))
+  .catch((err) => {
+    console.error(err);
+  });
 
+app.use(express.json());
 
+app.use("./routes/auth.js", authRoute);
+app.use("./routes/users", userRoute);
+app.use("./routes/movies", movieRoute);
+app.use("./routes/lists", listRoute);
 
+app.listen(process.env.PORT, () => {
+  console.log("server is up");
+});
